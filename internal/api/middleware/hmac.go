@@ -1,8 +1,8 @@
 package middleware
 
 import (
-	"RuRu/internal/fiber_server/http/guard/HMAC"
-	supportSession "RuRu/internal/fiber_server/http/session"
+	"RuRu/internal/api/guard/HMAC"
+	supportSession "RuRu/internal/api/session"
 	"github.com/gorilla/sessions"
 	"log/slog"
 	"net/http"

@@ -1,7 +1,7 @@
 package HMAC
 
 import (
-	error2 "RuRu/internal/fiber_server/http/error"
+	error3 "RuRu/internal/api/error"
 	"crypto/hmac"
 	"errors"
 	"fmt"
@@ -19,7 +19,7 @@ func Validate(r *http.Request, session *sessions.Session) (bool, error) {
 	URLTime := r.URL.Query().Get("time")
 
 	if IsRepeated(URLSignature, &session.Values) {
-		return false, errors.New(error2.ErrRepeatedRequest)
+		return false, errors.New(error3.ErrRepeatedRequest)
 	}
 
 	timestamp, err := strconv.ParseInt(URLTime, 10, 64)
@@ -29,7 +29,7 @@ func Validate(r *http.Request, session *sessions.Session) (bool, error) {
 	}
 
 	if timeOfLife > twoMinute {
-		return false, errors.New(error2.ErrKeyExpired)
+		return false, errors.New(error3.ErrKeyExpired)
 	}
 
 	NewSignature := fmt.Sprintf("%s%s", r.URL.Path, URLTime)

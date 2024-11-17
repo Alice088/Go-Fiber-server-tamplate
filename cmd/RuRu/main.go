@@ -1,11 +1,11 @@
 package main
 
 import (
-	"RuRu/internal/fiber_server/fiber_builder"
 	"RuRu/pkg/env"
+	"RuRu/startup"
 )
 
 func main() {
 	env.Load()
-	fiber_builder.Run()
+	startup.Server()
 }

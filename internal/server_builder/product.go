@@ -1,4 +1,4 @@
-package fiber_builder
+package server_builder
 
 import (
 	"github.com/gofiber/fiber/v2"

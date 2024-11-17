@@ -1,10 +1,11 @@
-package fiber_builder
+package server_builder
 
 import (
-	"RuRu/internal/fiber_server/http/controller"
-	supportSession "RuRu/internal/fiber_server/http/session"
+	"RuRu/internal/api/controller"
+	customMiddleware "RuRu/internal/api/middleware"
+	supportSession "RuRu/internal/api/session"
+	"github.com/gofiber/fiber/v2/middleware/pprof"
 
-	customMiddleware "RuRu/internal/fiber_server/http/middleware"
 	"RuRu/internal/logger"
 	_ "errors"
 	"fmt"
@@ -14,7 +15,6 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/idempotency"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
-	"github.com/gofiber/fiber/v2/middleware/pprof"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 	"os"
@@ -58,6 +58,7 @@ func (b Builder) InitMiddleware() {
 	b.Server.App.Use(helmet.New())
 	b.Server.App.Use(idempotency.New())
 	b.Server.App.Use(requestid.New())
+	b.Server.App.Use(pprof.New())
 	b.Server.App.Use(limiter.New(limiter.Config{
 		Max: 20,
 	}))
@@ -66,10 +67,6 @@ func (b Builder) InitMiddleware() {
 		StackTraceHandler: logger.PrettyStackTraceHandler(b.Server.Logger),
 	}))
 	b.Server.App.Use(customMiddleware.Hmac(b.Server.Logger, b.Server.Session))
-
-	if os.Getenv("ENV") == "debug" {
-		b.Server.App.Use(pprof.New())
-	}
 }
 
 func (b Builder) InitRoutes() {

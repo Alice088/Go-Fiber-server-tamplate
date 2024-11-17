@@ -1,4 +1,4 @@
-package fiber_builder
+package server_builder
 
 type IDirector interface {
 	Construct()
