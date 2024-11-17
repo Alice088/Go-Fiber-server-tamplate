@@ -1,34 +1,37 @@
 package HMAC
 
 import (
+	error2 "RuRu/internal/fiber_server/http/error"
 	"crypto/hmac"
+	"errors"
 	"fmt"
 	"github.com/gorilla/sessions"
+	"math"
 	"net/http"
-	"star_trade/backend/internal/core/support"
 	"strconv"
 	"time"
 )
 
-const fiveMinute = 300
+const twoMinute = int64(2 * time.Minute)
 
-func ValidateHMAC(r *http.Request, session *sessions.Session) bool {
-	if support.WasUsed(r.URL.Query().Get("signature"), &session.Values) {
-		return false
+func Validate(r *http.Request, session *sessions.Session) (bool, error) {
+	URLSignature := r.URL.Query().Get("signature")
+	URLTime := r.URL.Query().Get("time")
+
+	if IsRepeated(URLSignature, &session.Values) {
+		return false, errors.New(error2.ErrRepeatedRequest)
 	}
 
-	timestampStr := r.URL.Query().Get("time")
-	timestamp, err := strconv.ParseInt(timestampStr, 10, 64)
-	timeOfLife := support.MakePositive(timestamp - time.Now().Unix())
+	timestamp, err := strconv.ParseInt(URLTime, 10, 64)
+	timeOfLife := int64(math.Abs(float64(timestamp - time.Now().Unix())))
 	if err != nil {
-		return false
+		return false, err
 	}
 
-	if timeOfLife > fiveMinute {
-		return false
+	if timeOfLife > twoMinute {
+		return false, errors.New(error2.ErrKeyExpired)
 	}
 
-	message := fmt.Sprintf("%s%s", r.URL.Path, timestampStr)
-	receivedMAC := r.URL.Query().Get("signature")
-	return hmac.Equal([]byte(receivedMAC), []byte(GenerateHMAC(message)))
+	NewSignature := fmt.Sprintf("%s%s", r.URL.Path, URLTime)
+	return hmac.Equal([]byte(URLSignature), []byte(Generate(NewSignature))), nil
 }

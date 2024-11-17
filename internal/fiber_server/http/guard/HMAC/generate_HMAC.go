@@ -4,11 +4,11 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
-	"go.deanishe.net/env"
+	"os"
 )
 
-func GenerateHMAC(message string) string {
-	mac := hmac.New(sha256.New, []byte(env.Get("HMAC_KEY")))
-	mac.Write([]byte(message))
+func Generate(signature string) string {
+	mac := hmac.New(sha256.New, []byte(os.Getenv("HMAC_KEY")))
+	mac.Write([]byte(signature))
 	return hex.EncodeToString(mac.Sum(nil))
 }

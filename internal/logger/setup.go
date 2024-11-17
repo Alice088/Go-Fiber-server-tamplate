@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
-	"star_trade/backend/internal/app/infrastructure/configs"
 	"time"
 
 	"github.com/lmittmann/tint"
@@ -12,27 +11,26 @@ import (
 )
 
 func SetupLogger() *slog.Logger {
-	var log *slog.Logger
+	var logger *slog.Logger
 	var logFile *os.File
 	var err error
 
 	switch os.Getenv("ENV") {
-	case configs.EnvProd:
-		logFile, err = os.OpenFile(os.Getenv("BUILD_LOG_PATH"), os.O_RDWR|os.O_APPEND, 0644)
+	case "prod":
+		logFile, err = os.OpenFile("./logs/app.log", os.O_RDWR|os.O_APPEND, 0644)
 	default:
-		logFile, err = os.OpenFile(os.Getenv("LOG_PATH"), os.O_RDWR|os.O_APPEND, 0644)
+		logFile, err = os.OpenFile("../../logs/app.log", os.O_RDWR|os.O_APPEND, 0644)
 	}
 
 	if err != nil {
 		wd, _ := os.Getwd()
-
 		fmt.Println(err.Error(), wd)
 		os.Exit(1)
 	}
 
 	switch os.Getenv("ENV") {
-	case configs.EnvProd:
-		log = slog.New(multiSlog.Fanout(
+	case "prod":
+		logger = slog.New(multiSlog.Fanout(
 			slog.NewJSONHandler(logFile, &slog.HandlerOptions{
 				Level:     slog.LevelInfo,
 				AddSource: true,
@@ -44,7 +42,7 @@ func SetupLogger() *slog.Logger {
 			}),
 		))
 	default:
-		log = slog.New(multiSlog.Fanout(
+		logger = slog.New(multiSlog.Fanout(
 			slog.NewJSONHandler(logFile, &slog.HandlerOptions{
 				Level:     slog.LevelDebug,
 				AddSource: true,
@@ -57,5 +55,5 @@ func SetupLogger() *slog.Logger {
 		))
 	}
 
-	return log
+	return logger
 }

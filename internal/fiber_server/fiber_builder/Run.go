@@ -1,11 +1,11 @@
 package fiber_builder
 
-func New() {
+func Run() {
 	d := &Director{
 		Builder: &Builder{
 			Server: &Server{},
 		},
 	}
-	
+
 	d.Construct()
 }

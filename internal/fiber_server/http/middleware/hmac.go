@@ -1,65 +1,45 @@
 package middleware
 
-//func Hmac(log *slog.Logger, store *sessions.FilesystemStore) func(next http.Handler) http.Handler {
-//	return func(next http.Handler) http.Handler {
-//		allowedRoutes := []string{
-//			"/api/v0/user/login",
-//		}
-//
-//		log = log.With(slog.String("component", "middleware/hmac"))
-//		log.Info("hmac middleware enabled")
-//
-//		fn := func(w http.ResponseWriter, r *http.Request) {
-//			if slices.Contains(allowedRoutes, r.URL.Path) {
-//				next.ServeHTTP(w, r)
-//				return
-//			}
-//
-//			session, err := sessionSupport.Get("authSave", r, store)
-//			if err != nil {
-//				log.Error(err.Error())
-//
-//				render.Status(r, http.StatusInternalServerError)
-//				render.JSON(w, r, response.Error("Fail in server.", response.With{
-//					"time": time.Now(),
-//				}))
-//				return
-//			}
-//
-//			if !HMAC.ValidateHMAC(r, session) {
-//				err = session.Save(r, w)
-//				if err != nil {
-//					log.Error(err.Error())
-//
-//					render.Status(r, http.StatusInternalServerError)
-//					render.JSON(w, r, response.Error("Fail in server.", response.With{
-//						"time": time.Now(),
-//					}))
-//					return
-//				}
-//
-//				render.Status(r, http.StatusBadRequest)
-//				render.JSON(w, r, response.Error("Fail to Auth.", response.With{
-//					"time": time.Now(),
-//				}))
-//				log.Error("Request is not protect")
-//				return
-//			}
-//
-//			err = session.Save(r, w)
-//			if err != nil {
-//				log.Error(err.Error())
-//
-//				render.Status(r, http.StatusInternalServerError)
-//				render.JSON(w, r, response.Error("Fail in server.", response.With{
-//					"time": time.Now(),
-//				}))
-//				return
-//			}
-//
-//			next.ServeHTTP(w, r)
-//		}
-//
-//		return http.HandlerFunc(fn)
-//	}
-//}
+import (
+	"RuRu/internal/fiber_server/http/guard/HMAC"
+	supportSession "RuRu/internal/fiber_server/http/session"
+	"github.com/gorilla/sessions"
+	"log/slog"
+	"net/http"
+)
+
+func Hmac(logger *slog.Logger, store *sessions.FilesystemStore) func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		logger = logger.With(slog.String("component", "custom_middleware/hmac"))
+		logger.Info("hmac middleware enabled")
+
+		fn := func(w http.ResponseWriter, r *http.Request) {
+			session, err := supportSession.Get("authSave", r, store)
+
+			if err != nil {
+				logger.Error(err.Error())
+				http.Error(w, "Something went wrong", http.StatusInternalServerError)
+				return
+			}
+
+			ok, err := HMAC.Validate(r, session)
+
+			err = session.Save(r, w)
+			if err != nil {
+				logger.Error(err.Error())
+				http.Error(w, "Something went wrong", http.StatusInternalServerError)
+				return
+			}
+
+			if !ok {
+				logger.Error("Unauthorized request")
+				http.Error(w, "Unauthorized request", http.StatusUnauthorized)
+				return
+			}
+
+			next.ServeHTTP(w, r)
+		}
+
+		return http.HandlerFunc(fn)
+	}
+}
