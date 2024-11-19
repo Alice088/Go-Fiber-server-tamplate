@@ -1,18 +1,20 @@
 package api_key
 
 import (
-	"crypto/sha256"
-	"crypto/subtle"
-	"github.com/gofiber/fiber/v2"
+	"crypto/hmac"
 	"github.com/gofiber/fiber/v2/middleware/keyauth"
+	"log/slog"
 )
 
-func Validate(c *fiber.Ctx, key string) (bool, error) {
-	hashedAPIKey := sha256.Sum256([]byte(apiKey))
-	hashedKey := sha256.Sum256([]byte(key))
+func Validate(key string, logger *slog.Logger) (bool, error) {
+	hashedAPIKey, err := Generate(logger)
+	if err != nil {
+		return false, err
+	}
 
-	if subtle.ConstantTimeCompare(hashedAPIKey[:], hashedKey[:]) == 1 {
+	if hmac.Equal([]byte(hashedAPIKey), []byte(key)) {
 		return true, nil
 	}
+
 	return false, keyauth.ErrMissingOrMalformedAPIKey
 }

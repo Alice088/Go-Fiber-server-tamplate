@@ -8,6 +8,7 @@
 *.so
 *.dylib
 go.sum
+.idea
 
 
 # Test binary, build with `go test -c`

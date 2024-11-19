@@ -18,6 +18,9 @@ func SetupLogger() *slog.Logger {
 	switch os.Getenv("ENV") {
 	case "prod":
 		logFile, err = os.OpenFile("./logs/app.log", os.O_RDWR|os.O_APPEND, 0644)
+	case "test":
+		logFile = nil
+		err = nil
 	default:
 		logFile, err = os.OpenFile("../../logs/app.log", os.O_RDWR|os.O_APPEND, 0644)
 	}
@@ -41,6 +44,15 @@ func SetupLogger() *slog.Logger {
 				AddSource:  true,
 			}),
 		))
+
+	case "test":
+		logger = slog.New(multiSlog.Fanout(
+			slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+				Level:     slog.LevelDebug,
+				AddSource: false,
+			}),
+		))
+
 	default:
 		logger = slog.New(multiSlog.Fanout(
 			slog.NewJSONHandler(logFile, &slog.HandlerOptions{

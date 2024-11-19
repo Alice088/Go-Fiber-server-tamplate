@@ -1,9 +1,8 @@
 package HMAC
 
 import (
-	error3 "RuRu/internal/api/error"
+	"RuRu/internal/api/custom_errors"
 	"crypto/hmac"
-	"errors"
 	"fmt"
 	"github.com/gorilla/sessions"
 	"math"
@@ -19,7 +18,7 @@ func Validate(r *http.Request, session *sessions.Session) (bool, error) {
 	URLTime := r.URL.Query().Get("time")
 
 	if IsRepeated(URLSignature, &session.Values) {
-		return false, errors.New(error3.ErrRepeatedRequest)
+		return false, custom_errors.ErrRepeatedRequest
 	}
 
 	timestamp, err := strconv.ParseInt(URLTime, 10, 64)
@@ -29,7 +28,7 @@ func Validate(r *http.Request, session *sessions.Session) (bool, error) {
 	}
 
 	if timeOfLife > twoMinute {
-		return false, errors.New(error3.ErrKeyExpired)
+		return false, custom_errors.ErrKeyExpired
 	}
 
 	NewSignature := fmt.Sprintf("%s%s", r.URL.Path, URLTime)
