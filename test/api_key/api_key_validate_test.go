@@ -1,15 +1,15 @@
 package api_key_test
 
 import (
-	"RuRu/internal/api/guard/api_key"
-	"RuRu/internal/logger"
+	"app/internal/api/guard/api_key"
+	"app/internal/logger"
 	"testing"
 )
 
 func TestValidateApiKey(t *testing.T) {
 	t.Setenv("ENV", "test")
-	t.Setenv("API_KEY", "a9d1a556-4850-459d-8a33-0b66099e9684")
-	t.Setenv("API_KEY_SALT", "G-STAR^_^")
+	t.Setenv("API_KEY", "<API_KEY>")
+	t.Setenv("API_KEY_SALT", "<SALT")
 	log := logger.SetupLogger()
 
 	t.Log("Test of validation apiKey")

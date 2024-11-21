@@ -1,8 +1,8 @@
 package middleware
 
 import (
-	"RuRu/internal/api/guard/HMAC"
-	supportSession "RuRu/internal/api/session"
+	"app/internal/api/guard/HMAC"
+	supportSession "app/internal/api/session"
 	"github.com/gorilla/sessions"
 	"log/slog"
 	"net/http"

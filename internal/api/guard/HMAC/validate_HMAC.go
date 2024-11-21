@@ -1,7 +1,7 @@
 package HMAC
 
 import (
-	"RuRu/internal/api/custom_errors"
+	"app/internal/api/custom_errors"
 	"crypto/hmac"
 	"fmt"
 	"github.com/gorilla/sessions"

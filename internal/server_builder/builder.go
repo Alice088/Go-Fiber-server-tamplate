@@ -1,12 +1,12 @@
 package server_builder
 
 import (
-	"RuRu/internal/api/controller"
-	customMiddleware "RuRu/internal/api/middleware"
-	supportSession "RuRu/internal/api/session"
+	"app/internal/api/controller"
+	customMiddleware "app/internal/api/middleware"
+	supportSession "app/internal/api/session"
 	"github.com/gofiber/fiber/v2/middleware/pprof"
 
-	"RuRu/internal/logger"
+	"app/internal/logger"
 	_ "errors"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
@@ -40,7 +40,7 @@ func (b Builder) InitFiber() {
 		ServerHeader:      "Fiber",
 		BodyLimit:         300 * 1024 * 1024,
 		EnablePrintRoutes: true,
-		AppName:           fmt.Sprintf("RuRu-audios v%s", os.Getenv(`API_VERSION`)),
+		AppName:           fmt.Sprintf("<APP NAME> v%s", os.Getenv(`API_VERSION`)),
 	})
 }
 
@@ -70,9 +70,5 @@ func (b Builder) InitMiddleware() {
 }
 
 func (b Builder) InitRoutes() {
-	v1 := b.Server.App.Group("/api").Group("/v1")
-
-	v1Audio := v1.Group("/audio")
-
-	v1Audio.Post("/transcription", controller.Transcription(b.Server.Logger))
+	//
 }

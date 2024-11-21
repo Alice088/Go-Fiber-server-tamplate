@@ -7,7 +7,7 @@ import (
 func New() *sessions.FilesystemStore {
 	store := sessions.NewFilesystemStore(
 		"",
-		[]byte("707e4b95025a528341deadb3a1"),
+		[]byte("<BYTES>"),
 	)
 
 	store.Options = &sessions.Options{

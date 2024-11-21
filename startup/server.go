@@ -1,7 +1,7 @@
 package startup
 
 import (
-	fiber_builder2 "RuRu/internal/server_builder"
+	fiber_builder2 "app/internal/server_builder"
 )
 
 func Server() {

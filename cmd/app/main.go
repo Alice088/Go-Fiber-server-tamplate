@@ -1,8 +1,8 @@
 package main
 
 import (
-	"RuRu/pkg/env"
-	"RuRu/startup"
+	"app/pkg/env"
+	"app/startup"
 )
 
 func main() {

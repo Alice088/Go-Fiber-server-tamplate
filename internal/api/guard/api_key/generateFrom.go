@@ -1,7 +1,7 @@
 package api_key
 
 import (
-	"RuRu/internal/api/custom_errors"
+	"app/internal/api/custom_errors"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
